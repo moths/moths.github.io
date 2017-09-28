@@ -1,1 +1,48 @@
-Hello World
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+	<link rel="stylesheet" type="text/css" href="slick/slick.css" />
+	<link rel="stylesheet" type="text/css" href="slick/slick-theme.css" />
+	<style>
+	</style>
+	<script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+</head>
+<body style="max-width:16cm">
+	<div><img src="http://servlet.dmi.dk/bv/servlet/bvImage?stat=6031&param=wind" style="width:100%" /></div>
+	<div><img src="http://servlet.dmi.dk/bv/servlet/bvImage?stat=6031&param=temp" style="width:100%" /></div>
+	<div class="your-class" id="your-id"></div>
+	<script type="text/javascript" src="slick/slick.min.js"></script>
+	<script>
+		(function () {
+			var dmiAPI = 'http://anyorigin.com/go?url=http%3A//www.dmi.dk/vejr/maalinger/radar-nedboer/%3Ftype%3D30800%26tx_dmiafghanistan_afghanistan%255Baction%255D%3DajaxTabbedStreamMapDataRequest%26cHash%3D17d64301c5ef7e5f1fe1f6879b21da11%26tx_dmiafghanistan_afghanistan%5BstreamId%5D%3D3%26tx_dmiafghanistan_afghanistan%5BnumberOfImages%5D%3D23&callback=?';
+		$.getJSON(dmiAPI, {
+			format: "json"
+		}) // [{ "src": "\/uploads\/tx_dmidatastore\/webservice\/f\/9\/c\/d\/0\/59ccad7e0dc9f.png" }]
+			.done(function (data) {
+				$.each(data.contents, function (i, item) {
+					$("<img>").attr("src", 'http://www.dmi.dk' + item.src).appendTo("#your-id");
+				});
+				$("#your-id img:last").one("load", function () {
+					$('.your-class').slick({
+						dots: true,
+						infinite: true,
+						speed: 0,
+						autoplay: true,
+						useTransform: false,
+						autoplaySpeed: 200,
+						fade: false,
+						adaptiveHeight: true,
+						cssEase: 'linear'
+					});
+				}).each(function () {
+					if (this.complete) $(this).load();
+				});
+			});
+		})();
+	</script>
+</body>
+</html>
