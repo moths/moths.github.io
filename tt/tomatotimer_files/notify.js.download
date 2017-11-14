@@ -1,0 +1,92 @@
+/*
+ * notify.js - by Pratik Desai {desai@pratyk.com}
+ * Enables Browser Desktop Notifications + Audio Notifications using <audio> tag
+ *
+ */
+
+var current_alarm;
+
+// request permission on page load
+document.addEventListener('DOMContentLoaded', function () {
+    console.log(Notification.permission);
+});
+
+// could be deprecated
+function permit() {
+    console.log('Get Permission : ' + Notification.permission);
+    if (!("Notification" in window)) {
+	alert("This browser does not support system notifications");
+    } else if (Notification.permission == "granted") {
+	console.log('already granted');
+    } else if (Notification.permission !== "denied") {
+	console.log('Notifications not denied, continuing');
+	Notification.requestPermission().then(function(result) {
+	    if (result === 'denied') {
+		console.log('Permission wasn\'t granted. Allow a retry.');
+		return;
+	    }
+	    if (result === 'default') {
+		console.log('The permission request was dismissed.');
+		return;
+	    }
+	    console.log('Permission was granted. : ' + result);
+	    console.log('Got Permission : ' + Notification.permission);
+
+	    // Do something with the granted permission.
+	});
+    }
+}
+
+// function to trigger notifications
+function desktopAlert() {
+    if (!Notification) {
+        alert('Desktop notifications not available in your browser. Try Chrome, Firefox or Safari.');
+        return;
+    }
+    if (Notification.permission !== "granted") 
+        Notification.requestPermission();
+    else {
+        var notification = new Notification('TomatoTimer', {
+            icon: 'http://tomato-timer.com/tom.gif',
+            body: "Your time is up!!",
+        });
+        setTimeout(notification.close.bind(notification), 6000);
+        notification.onclick = function () {
+            window.focus();
+        };
+    }
+}
+
+// control audio notifications
+function buzzer(test) {
+    var alertoption;
+    var volumeoption;
+
+    if (!test) {
+        alertoption = localStorage.getItem("alertoption");
+        volumeoption = localStorage.getItem("volumeoption");
+    } else {
+        alertoption = $("#alertoption").val();
+        volumeoption = $("#volume").val();
+    }
+    
+    var choice = new Array();
+    choice[0] = alertoption + '.mp3';
+    choice[1] = alertoption + '.ogg';
+    choice[2] = alertoption + '.wav';
+
+    var alarm = new Howl({
+        src: choice,
+        volume: volumeoption,
+	html5: true
+    });
+
+    if (current_alarm)
+        current_alarm.stop();
+
+    alarm.play();
+    current_alarm = alarm;
+
+    if (!test)
+        desktopAlert();
+}
